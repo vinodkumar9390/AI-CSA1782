@@ -1,0 +1,26 @@
+from itertools import permutations
+
+def solve_cryptarithmetic(puzzle):
+    words = puzzle.split()
+    unique_letters = set("".join(words))
+    if len(unique_letters) > 10:
+        return None  # More than 10 unique letters, not possible
+
+    for perm in permutations('0123456789', len(unique_letters)):
+        mapping = dict(zip(unique_letters, perm))
+        if all(mapping[word[0]] != '0' for word in words):
+            equation = " + ".join("".join(mapping[c] for c in word) for word in words)
+            if eval(equation) == 0:
+                return mapping
+    return None  # No solution found
+
+if __name__ == "__main__":
+    puzzle = "SEND + MORE = MONEY"
+    solution = solve_cryptarithmetic(puzzle)
+    if solution:
+        print("Solution:")
+        for letter, digit in solution.items():
+            print(f"{letter} = {digit}")
+    else:
+        print("No solution found.")
+
