@@ -1,0 +1,68 @@
+def is_valid(state):
+    missionaries_left, cannibals_left, boat_left, missionaries_right, cannibals_right = state
+
+    if missionaries_left < 0 or missionaries_right < 0 or cannibals_left < 0 or cannibals_right < 0:
+        return False
+
+    if missionaries_left > 3 or missionaries_right > 3 or cannibals_left > 3 or cannibals_right > 3:
+        return False
+
+    if cannibals_left > missionaries_left > 0 or cannibals_right > missionaries_right > 0:
+        return False
+
+    return True
+
+def goal_state(state):
+    return state == (0, 0, 0, 3, 3)
+
+def successors(state):
+    successors = []
+    missionaries_left, cannibals_left, boat_left, missionaries_right, cannibals_right = state
+
+    if boat_left == 1:
+        for m in range(3):
+            for c in range(3):
+                if 0 < m + c <= 2:
+                    new_state = (missionaries_left - m, cannibals_left - c, 0, missionaries_right + m, cannibals_right + c)
+                    if is_valid(new_state):
+                        successors.append(new_state)
+    else:
+        for m in range(3):
+            for c in range(3):
+                if 0 < m + c <= 2:
+                    new_state = (missionaries_left + m, cannibals_left + c, 1, missionaries_right - m, cannibals_right - c)
+                    if is_valid(new_state):
+                        successors.append(new_state)
+
+    return successors
+
+def dfs(state, path, visited):
+    if goal_state(state):
+        return path
+
+    visited.add(state)
+
+    for successor in successors(state):
+        if successor not in visited:
+            new_path = path + [successor]
+            result = dfs(successor, new_path, visited)
+            if result is not None:
+                return result
+
+    return None
+
+def solve_missionaries_cannibals():
+    initial_state = (3, 3, 1, 0, 0)
+    visited = set()
+    path = dfs(initial_state, [initial_state], visited)
+
+    if path is None:
+        print("No solution found.")
+    else:
+        for state in path:
+            print(state)
+
+if __name__ == "__main__":
+    print("Missionaries and Cannibals Problem Solution:")
+    solve_missionaries_cannibals()
+
